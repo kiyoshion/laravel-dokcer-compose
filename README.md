@@ -1,6 +1,13 @@
-# How to build a Laravel app environment with docker compose?
+# How to build a Laravel environment with docker compose?
 
-This repository is a docker compose includes Laravel stacks like PHP, Node.js, Nginx and MySQL. So you can build a Laravel app environment quickly.
+This repository is for building Laravel environment contains PHP, Node.js, Nginx and MySQL. So you can build a Laravel environment quickly.
+
+This uses these images or binary.
+
+- php:8.2-fpm
+- nodejs_18.x
+- nginx:1.25-alpine
+- mysql:8.0
 
 ## How to use?
 
@@ -8,7 +15,7 @@ This repository is a docker compose includes Laravel stacks like PHP, Node.js, N
 
 Git clone this repository to your local machine or somewhere.
 
-### 2. Edit each stacks version you need, like below.
+### 2. Edit each versions you need
 
 #### 2.1 PHP and Node.js
 
@@ -18,12 +25,12 @@ FROM php:8.2-fpm
 
 ...
 
-ENV NODE_VERSION=18
+RUN curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh && \
 ```
 
 For PHP, seach PHP images [here](https://hub.docker.com/_/php).
 
-For Node.js, see Node versions [here](https://github.com/nodesource/distributions). I install Node.js via NodeSource, so you can set integer.
+For Node.js, see Node versions [here](https://github.com/nodesource/distributions). This uses binary distributions, so you can set integer.
 
 ex. 14, 16, 18
 
@@ -47,25 +54,23 @@ For MySQL, seach MySQL images [here](https://hub.docker.com/_/mysql). Of cause y
 
 ## 3. Let's get started
 
-:::note
-Before get started, you can use Makefile like below. In next section, i introduce how to use Makefile to deploy app easier. Go to [Let's get started with Makefile](#4-lets-get-started-with-makefile) if you want.
-
-For example
-
-```
-make up
-```
-
-is
-
-```
-docker-compose up -d --build
-```
-:::
+>Before get started, you can use Makefile like below. In next section, I introduce how to use Makefile to deploy app easier. Go to [Let's get started with Makefile](#4-lets-get-started-with-makefile) if you want.
+>
+>For example
+>
+>```
+>make up
+>```
+>
+>is
+>
+>```
+>docker-compose up -d
+>```
 
 ### 3.1 Build docker containers
 
-Before build docker containers, if you use Vite, you need to open ports 5173 for Vite.
+Before build docker containers, if you use Vite, you need to open 5173 ports for Vite.
 
 ```
 services:
@@ -97,7 +102,7 @@ You are /app directory in app container. Then
 git clone https://github.com/kiyoshion/laravel-inertia-react-ssr .
 ```
 
-When you clone your repository to /app directory, you can see your app on your local /src directory.
+When you clone your repository to /app directory, you can see your Laravel project at your local /src directory.
 
 ### 3.4 .env
 Copy .env.example to .env, then edit it to your environment
@@ -106,29 +111,29 @@ Copy .env.example to .env, then edit it to your environment
 cp .env.example .env
 ```
 
-Be careful, DB settings need same value of docker-compose.yml. In this case, DB_HOST is `db` that is container name at docker-compose.yml.
-
-/docker-compose.yml
-```
-services:
-  app:
-  ...
-
-  web:
-  ...
-
-  db: // DB_HOST for .env
-    build:
-      context: .
-      dockerfile: ./docker/db/Dockerfile
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_DATABASE: database
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
-```
+> Be careful, DB settings need same value of docker-compose.yml. In this case, DB_HOST is `db` that is container name at docker-compose.yml.
+>
+> /docker-compose.yml
+> ```
+> services:
+>   app:
+>   ...
+>
+>   web:
+>   ...
+>
+>   db: // DB_HOST
+>     build:
+>       context: .
+>       dockerfile: ./docker/db/Dockerfile
+>     ports:
+>       - 3306:3306
+>     environment:
+>       MYSQL_DATABASE: database
+>       MYSQL_USER: user
+>       MYSQL_PASSWORD: password
+>       MYSQL_ROOT_PASSWORD: password
+> ```
 
 /.env
 ```
@@ -148,7 +153,7 @@ DB_PASSWORD=password
 
 ### 3.5. Deploy
 
-Deploy for production.
+Deploy for production. Go into the app container, then
 
 ```
 composer install
@@ -169,14 +174,14 @@ OR for deveopment
 ```
 composer install
 npm install
+npm run dev
 php artisan key:generate
 php artisan storage:link
 chmod -R 777 storage bootstrap/cache
 php artisan migrate:fresh --seed
-npm run dev
 ```
 
-Congraturations ::tada:: You can access your APP_URL or [http://localhost](http://localhost:8080).
+Congraturations! :tada: You can access YOUR_APP_URL or [http://localhost:8080](http://localhost:8080).
 
 ## 4. Let's get started with Makefile
 
@@ -184,7 +189,7 @@ If you had finished above steps manually, you don't need these steps.
 
 ### 4.1 Build docker containers
 
-Before build docker containers, if you use Vite, you need to open ports 5173 for Vite.
+Before build docker containers, if you use Vite, you need to open 5173 ports for Vite.
 
 ```
 services:
@@ -199,6 +204,7 @@ services:
 Then
 
 ```
+make build
 make up
 ```
 
@@ -223,32 +229,29 @@ Copy .env.example to .env
 cp .env.example .env
 ```
 
-::: note
-Be careful, DB settings need same value of docker-compose.yml. In this case, DB_HOST is `db` that is container name at docker-compose.yml.
-
-/docker-compose.yml (in your local)
-```
-services:
-  app:
-  ...
-
-  web:
-  ...
-
-  db: // DB_HOST for .env
-    build:
-      context: .
-      dockerfile: ./docker/db/Dockerfile
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_DATABASE: database
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
-```
-:::
-
+>Be careful, DB settings need same value of docker-compose.yml. In this case, DB_HOST is `db` that is container name at docker-compose.yml.
+>
+>/docker-compose.yml
+>```
+>services:
+>  app:
+>  ...
+>
+>  web:
+>  ...
+>
+>  db: // DB_HOST
+>    build:
+>      context: .
+>      dockerfile: ./docker/db/Dockerfile
+>    ports:
+>      - 3306:3306
+>    environment:
+>      MYSQL_DATABASE: database
+>      MYSQL_USER: user
+>      MYSQL_PASSWORD: password
+>      MYSQL_ROOT_PASSWORD: password
+>```
 
 Then edit .env
 
@@ -256,7 +259,7 @@ Then edit .env
 vim .env
 ```
 
-/app/.env (in app container)
+/app/.env
 ```
 APP_NAME=YOUR_APP_NAME
 APP_ENV=local
@@ -286,4 +289,4 @@ OR for development
 make dev
 ```
 
-Congraturations ::tada:: You can access your APP_URL or [http://localhost](http://localhost:8080).
+Congraturations! :tada: You can access YOUR_APP_URL or [http://localhost:8080](http://localhost:8080).

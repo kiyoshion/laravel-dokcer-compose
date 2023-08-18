@@ -6,7 +6,9 @@ ENV TZ=UTC \
     LC_ALL=en_US.UTF-8
 
 RUN apt-get update && \
-    apt-get install -y vim gcc g++ make git unzip libzip-dev libicu-dev libonig-dev && \
+    apt-get install -y vim gcc g++ make git unzip libzip-dev libicu-dev libonig-dev libpng-dev libjpeg-dev && \
+    docker-php-ext-configure gd --with-jpeg  &&\
+    docker-php-ext-install -j$(nproc) gd &&\
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     docker-php-ext-install intl pdo_mysql zip bcmath

@@ -1,30 +1,36 @@
 install:
+	@make build
 	@make up
-	@make composer
-	docker compose exec app cp .env.example .env
 	@make setup
 dev:
-	@make up
-	@make composer
-	docker compose exec app npm install
-	docker compose exec -d app npm run dev
+	@make npmdev
 	@make setup
 	@make clear
 	@make migrate
 prod:
-	@make up
-	@make composer
 	docker compose exec app composer install --optimize-autoloader --no-dev
-	docker compose exec app npm install
-	docker compose exec app npm run build
+	@make npmprod
 	@make setup
 	@make clear
 	@make cache
 	@make migrate
 up:
-	docker compose up -d --build
+	docker compose up -d
+build:
+	docker compose build
+	@make composer
+stop:
+	docker compose stop
 down:
 	docker compose down --remove-orphans
+down-v:
+	docker compose down --remove-orphans --volumes
+npmdev:
+	docker compose exec app npm install
+	docker compose exec -d app npm run dev
+npmprod:
+	docker compose exec app npm install
+	docker compose exec app npm run build
 web:
 	docker compose exec web bash
 app:

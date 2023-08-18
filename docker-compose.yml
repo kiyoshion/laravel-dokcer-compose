@@ -32,7 +32,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
-      TZ: 'Asia/Tokyo'
+      TZ: 'UTC'
     volumes:
       - mysql-volume:/var/lib/mysql
 
